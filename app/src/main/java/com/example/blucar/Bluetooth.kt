@@ -55,18 +55,18 @@ class Bluetooth(private val bluetoothActivity: BluetoothActivity) {
         ConnectBT().execute()
     }
 
-    fun btSendData(s: String) {
-        val lineBreak = "\n"
-        if (isBtConnected) {
-            try {
-                btSocket!!.outputStream.write((s + lineBreak).toByteArray())
-            } catch (e: IOException) {
-                e.printStackTrace()
+        fun btSendData(s: String) {
+            val lineBreak = "\n"
+            if (isBtConnected) {
+                try {
+                    btSocket!!.outputStream.write((s + lineBreak).toByteArray())
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            } else {
+                bluetoothActivity.msg("Bluetooth is not connected.")
             }
-        } else {
-            bluetoothActivity.msg("Bluetooth is not connected.")
         }
-    }
 
     fun disconnect() {
         bluetoothActivity.unregisterReceiver(mReceiver)

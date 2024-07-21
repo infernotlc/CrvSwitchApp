@@ -11,9 +11,8 @@ import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import com.example.blucar.DeviceList.Companion.address
+
 
 open class MainActivity : BluetoothActivity() {
 
@@ -94,6 +93,7 @@ open class MainActivity : BluetoothActivity() {
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 1) { // deviceList

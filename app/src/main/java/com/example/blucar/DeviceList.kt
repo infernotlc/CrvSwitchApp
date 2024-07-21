@@ -26,7 +26,7 @@ class DeviceList : AppCompatActivity() {
     companion object {
         const val REQUEST_ENABLE_BT = 1
         const val REQUEST_PERMISSION_BT = 2
-        var address = "device_address"
+        const val address = "device_address"
     }
 
     @RequiresApi(Build.VERSION_CODES.S)
@@ -50,14 +50,11 @@ class DeviceList : AppCompatActivity() {
                 // Ask to the user to turn the Bluetooth on
                 val turnBTon = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
                 if (ActivityCompat.checkSelfPermission(
-                        this,
-                        Manifest.permission.BLUETOOTH_CONNECT
+                        this, Manifest.permission.BLUETOOTH_CONNECT
                     ) != PackageManager.PERMISSION_GRANTED
                 ) {
                     ActivityCompat.requestPermissions(
-                        this,
-                        arrayOf(Manifest.permission.BLUETOOTH_CONNECT),
-                        REQUEST_PERMISSION_BT
+                        this, arrayOf(Manifest.permission.BLUETOOTH_CONNECT), REQUEST_PERMISSION_BT
                     )
                     return
                 }
@@ -71,14 +68,11 @@ class DeviceList : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.S)
     private fun checkBTPermissionsAndShowPairedDevices() {
         if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.BLUETOOTH_CONNECT
+                this, Manifest.permission.BLUETOOTH_CONNECT
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.BLUETOOTH_CONNECT),
-                REQUEST_PERMISSION_BT
+                this, arrayOf(Manifest.permission.BLUETOOTH_CONNECT), REQUEST_PERMISSION_BT
             )
         } else {
             pairedDevicesList()
@@ -87,9 +81,7 @@ class DeviceList : AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.S)
     override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_PERMISSION_BT && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -113,14 +105,11 @@ class DeviceList : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.S)
     private fun pairedDevicesList() {
         if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.BLUETOOTH_CONNECT
+                this, Manifest.permission.BLUETOOTH_CONNECT
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.BLUETOOTH_CONNECT),
-                REQUEST_PERMISSION_BT
+                this, arrayOf(Manifest.permission.BLUETOOTH_CONNECT), REQUEST_PERMISSION_BT
             )
             return
         }
@@ -128,15 +117,13 @@ class DeviceList : AppCompatActivity() {
         val pairedDevices = myBluetooth?.bondedDevices
         val list = ArrayList<String>()
 
-        if (pairedDevices != null && pairedDevices.isNotEmpty()) {
+        if (!pairedDevices.isNullOrEmpty()) {
             for (bt in pairedDevices) {
                 list.add("${bt.name}\n${bt.address}")
             }
         } else {
             Toast.makeText(
-                applicationContext,
-                "No Paired Bluetooth Devices Found.",
-                Toast.LENGTH_LONG
+                applicationContext, "No Paired Bluetooth Devices Found.", Toast.LENGTH_LONG
             ).show()
         }
 
