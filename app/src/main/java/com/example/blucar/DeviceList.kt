@@ -85,6 +85,7 @@ class DeviceList : AppCompatActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -109,6 +110,7 @@ class DeviceList : AppCompatActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
     private fun pairedDevicesList() {
         if (ActivityCompat.checkSelfPermission(
                 this,

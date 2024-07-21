@@ -11,6 +11,8 @@ import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import com.example.blucar.DeviceList.Companion.address
 
 open class MainActivity : BluetoothActivity() {
@@ -24,6 +26,10 @@ open class MainActivity : BluetoothActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+
         addLayoutChannels()
         bluetooth = Bluetooth(this)
     }
@@ -70,7 +76,7 @@ open class MainActivity : BluetoothActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
+        return when (item.itemId) {
             R.id.connectBluetooth -> {
                 if (bluetooth?.isBtConnected == false) {
                     val intent = Intent(this, DeviceList::class.java)
@@ -78,13 +84,13 @@ open class MainActivity : BluetoothActivity() {
                 } else {
                     msg("Bluetooth is already connected.")
                 }
-                return true
+                true
             }
             R.id.disconnectBluetooth -> {
                 bluetooth?.disconnect()
-                return true
+                true
             }
-            else -> return super.onOptionsItemSelected(item)
+            else -> super.onOptionsItemSelected(item)
         }
     }
 
@@ -92,7 +98,7 @@ open class MainActivity : BluetoothActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 1) { // deviceList
             if (resultCode == Activity.RESULT_OK) {
-                val address = data?.getStringExtra(Bluetooth.myUUID.toString())
+                val address = data?.getStringExtra(DeviceList.address)
                 if (address != null) {
                     bluetooth?.setAddress(address)
                 }

@@ -13,6 +13,8 @@ import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.AsyncTask
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.preference.PreferenceManager
 import java.io.IOException
@@ -101,6 +103,7 @@ class Bluetooth(private val bluetoothActivity: BluetoothActivity) {
             bluetoothActivity.setProgress(progress)
         }
 
+        @RequiresApi(Build.VERSION_CODES.S)
         @Deprecated("Deprecated in Java")
         override fun doInBackground(vararg params: Void?): Boolean {
             try {
@@ -112,19 +115,39 @@ class Bluetooth(private val bluetoothActivity: BluetoothActivity) {
                     }
 
                     val btDevice = myBluetooth!!.getRemoteDevice(address)
-                    if (ActivityCompat.checkSelfPermission(
-                            bluetoothActivity,
-                            Manifest.permission.BLUETOOTH_CONNECT
-                        ) != PackageManager.PERMISSION_GRANTED
-                    ) {
-                        // Request Bluetooth permissions if not granted
-                        ActivityCompat.requestPermissions(
-                            bluetoothActivity,
-                            arrayOf(Manifest.permission.BLUETOOTH_CONNECT),
-                            1
-                        )
-                        connectSuccess = false
-                        return connectSuccess
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        // For API 31 and above
+                        if (ActivityCompat.checkSelfPermission(
+                                bluetoothActivity,
+                                Manifest.permission.BLUETOOTH_CONNECT
+                            ) != PackageManager.PERMISSION_GRANTED
+                        ) {
+                            // Request Bluetooth permissions if not granted
+                            ActivityCompat.requestPermissions(
+                                bluetoothActivity,
+                                arrayOf(Manifest.permission.BLUETOOTH_CONNECT),
+                                1
+                            )
+                            connectSuccess = false
+                            return connectSuccess
+                        }
+                    } else {
+                        // For API 30 and below
+                        if (ActivityCompat.checkSelfPermission(
+                                bluetoothActivity,
+                                Manifest.permission.BLUETOOTH
+                            ) != PackageManager.PERMISSION_GRANTED
+                        ) {
+                            // Request Bluetooth permissions if not granted
+                            ActivityCompat.requestPermissions(
+                                bluetoothActivity,
+                                arrayOf(Manifest.permission.BLUETOOTH),
+                                1
+                            )
+                            connectSuccess = false
+                            return connectSuccess
+                        }
                     }
 
                     btSocket = btDevice.createInsecureRfcommSocketToServiceRecord(myUUID)
@@ -136,6 +159,7 @@ class Bluetooth(private val bluetoothActivity: BluetoothActivity) {
             }
             return connectSuccess
         }
+
 
         @Deprecated("Deprecated in Java")
         override fun onPostExecute(result: Boolean) {
