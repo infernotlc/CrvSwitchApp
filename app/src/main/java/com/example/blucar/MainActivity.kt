@@ -51,7 +51,9 @@ open class MainActivity : BluetoothActivity() {
         val channel: View = inflater.inflate(R.layout.include_channel, mainLayout, false)
         val buttons = listOf(R.id.b0, R.id.b1, R.id.b2, R.id.b3, R.id.b4)
         for (i in buttons.indices) {
-            initButton(buttons[i], "$letter$i", "C$channelName $letter$i", channel)
+            val tag = "$letter$i" // Örnek: A0, A1, vb.
+            val text = "C$channelName $letter$i" // Örnek: C1 A0, C1 A1, vb.
+            initButton(buttons[i], tag, text, channel)
         }
         mainLayout?.addView(channel)
     }
@@ -64,7 +66,12 @@ open class MainActivity : BluetoothActivity() {
 
     fun onButtonClick(view: View) {
         val data = view.tag as String
-        bluetooth?.btSendData(data)
+        val success = bluetooth?.btSendData(data) ?: false
+        if (success as Boolean) {
+            msg("Data sent successfully: $data")
+        } else {
+            msg("Failed to send data: $data")
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

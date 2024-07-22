@@ -55,18 +55,23 @@ class Bluetooth(private val bluetoothActivity: BluetoothActivity) {
         ConnectBT().execute()
     }
 
-        fun btSendData(s: String) {
-            val lineBreak = "\n"
-            if (isBtConnected) {
-                try {
-                    btSocket!!.outputStream.write((s + lineBreak).toByteArray())
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                }
-            } else {
-                bluetoothActivity.msg("Bluetooth is not connected.")
+    fun btSendData(s: String): Boolean {
+        val lineBreak = "\n"
+        return if (isBtConnected) {
+            try {
+                btSocket!!.outputStream.write((s + lineBreak).toByteArray())
+                bluetoothActivity.runOnUiThread { bluetoothActivity.msg("Data sent: $s") }
+                true
+            } catch (e: IOException) {
+                e.printStackTrace()
+                bluetoothActivity.runOnUiThread { bluetoothActivity.msg("Error sending data: $s") }
+                false
             }
+        } else {
+            bluetoothActivity.runOnUiThread { bluetoothActivity.msg("Bluetooth is not connected.") }
+            false
         }
+    }
 
     fun disconnect() {
         bluetoothActivity.unregisterReceiver(mReceiver)
@@ -121,12 +126,19 @@ class Bluetooth(private val bluetoothActivity: BluetoothActivity) {
                         if (ActivityCompat.checkSelfPermission(
                                 bluetoothActivity,
                                 Manifest.permission.BLUETOOTH_CONNECT
+                            ) != PackageManager.PERMISSION_GRANTED ||
+                            ActivityCompat.checkSelfPermission(
+                                bluetoothActivity,
+                                Manifest.permission.BLUETOOTH_SCAN
                             ) != PackageManager.PERMISSION_GRANTED
                         ) {
                             // Request Bluetooth permissions if not granted
                             ActivityCompat.requestPermissions(
                                 bluetoothActivity,
-                                arrayOf(Manifest.permission.BLUETOOTH_CONNECT),
+                                arrayOf(
+                                    Manifest.permission.BLUETOOTH_CONNECT,
+                                    Manifest.permission.BLUETOOTH_SCAN
+                                ),
                                 1
                             )
                             connectSuccess = false
@@ -137,12 +149,19 @@ class Bluetooth(private val bluetoothActivity: BluetoothActivity) {
                         if (ActivityCompat.checkSelfPermission(
                                 bluetoothActivity,
                                 Manifest.permission.BLUETOOTH
+                            ) != PackageManager.PERMISSION_GRANTED ||
+                            ActivityCompat.checkSelfPermission(
+                                bluetoothActivity,
+                                Manifest.permission.BLUETOOTH_ADMIN
                             ) != PackageManager.PERMISSION_GRANTED
                         ) {
                             // Request Bluetooth permissions if not granted
                             ActivityCompat.requestPermissions(
                                 bluetoothActivity,
-                                arrayOf(Manifest.permission.BLUETOOTH),
+                                arrayOf(
+                                    Manifest.permission.BLUETOOTH,
+                                    Manifest.permission.BLUETOOTH_ADMIN
+                                ),
                                 1
                             )
                             connectSuccess = false
@@ -159,7 +178,6 @@ class Bluetooth(private val bluetoothActivity: BluetoothActivity) {
             }
             return connectSuccess
         }
-
 
         @Deprecated("Deprecated in Java")
         override fun onPostExecute(result: Boolean) {
